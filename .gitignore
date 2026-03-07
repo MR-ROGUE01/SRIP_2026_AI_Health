@@ -1,0 +1,16 @@
+# Raw data (too large for GitHub)
+Data/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
