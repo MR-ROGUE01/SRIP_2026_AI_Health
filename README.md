@@ -1,39 +1,70 @@
 # SRIP 2026 — AI for Health: Sleep Breathing Irregularity Detection
 
-**Author:** Raj Kumar Gupta  
-**Task:** Health Sensing — Detecting breathing irregularities during sleep using overnight PSG data
+Author: Raj Kumar Gupta  
+Task: Health Sensing — Detecting breathing irregularities during sleep using overnight PSG data
 
 ---
 
 ## Problem Statement
 
-Detecting abnormal breathing patterns (Apnea, Hypopnea) during sleep using physiological signals collected from 5 participants over 8-hour overnight sessions.
+Sleep breathing disorders such as Apnea and Hypopnea are characterized by interruptions or reductions in breathing during sleep. Detecting these events is important for diagnosing sleep-related respiratory disorders.
+
+This project analyzes overnight physiological recordings (~8 hours per participant) to detect abnormal breathing patterns using machine learning.
+
+The goal is to:
+
+- Process raw physiological signals
+- Generate labeled breathing windows
+- Train a deep learning model to classify breathing irregularities
+
+---
 
 ## Dataset
 
 The dataset contains overnight sleep recordings for 5 participants (AP01–AP05). Each participant folder contains:
 
-- `nasal_airflow.txt` — Nasal airflow signal at 32 Hz
-- `thoracic_movement.txt` — Thoracic movement signal at 32 Hz
-- `spo2.txt` — Oxygen saturation signal at 4 Hz
-- `flow_events.csv` — Annotated breathing events (Apnea, Hypopnea)
-- `sleep_profile.csv` — Sleep stage annotations
+- nasal_airflow.txt — Nasal airflow signal at 32 Hz
+- thoracic_movement.txt — Thoracic movement signal at 32 Hz
+- spo2.txt — Oxygen saturation signal at 4 Hz
+- flow_events.csv — Annotated breathing events (Apnea, Hypopnea)
+- sleep_profile.csv — Sleep stage annotations
 
-> **Note:** The `Data/` folder is included in this repository. The generated dataset `Dataset/breathing_dataset.csv` is tracked via Git LFS.
+Each recording corresponds to approximately 8 hours of sleep data.
+
+Note: The Data/ folder is included in this repository. The generated dataset Dataset/breathing_dataset.csv is tracked via Git LFS.
+
+---
+
+## Project Pipeline
+
+Raw Physiological Signals
+        ↓
+Signal Visualization
+        ↓
+Signal Filtering
+        ↓
+Sliding Window Segmentation
+        ↓
+Event Labeling
+        ↓
+Machine Learning Model
 
 ---
 
 ## Project Structure
-```
+
 SRIP_2026_AI_Health/
+│
 ├── Data/
 │   ├── AP01/
 │   ├── AP02/
 │   ├── AP03/
 │   ├── AP04/
 │   └── AP05/
+│
 ├── Dataset/
 │   └── breathing_dataset.csv
+│
 ├── Visualizations/
 │   ├── AP01_visualization.pdf
 │   ├── AP02_visualization.pdf
@@ -41,59 +72,72 @@ SRIP_2026_AI_Health/
 │   ├── AP04_visualization.pdf
 │   ├── AP05_visualization.pdf
 │   └── confusion_matrix.png
+│
 ├── models/
 │   └── cnn_model.py
+│
 ├── notebooks/
 │   └── train_model.ipynb
+│
 ├── scripts/
 │   ├── vis.py
 │   └── create_dataset.py
+│
 ├── requirements.txt
 └── README.md
-```
 
 ---
 
 ## How to Run
 
-### Part 1 — Visualize signals
-```bash
+Part 1 — Visualize signals
+
 python scripts/vis.py -name "Data/AP01"
-```
-Generates a PDF with Nasal Airflow, Thoracic Movement and SpO2 plots with breathing events overlaid. Output saved to `Visualizations/`.
 
-### Part 2 — Create dataset
-```bash
+Generates a PDF with Nasal Airflow, Thoracic Movement and SpO2 plots with breathing events overlaid. Output saved to Visualizations/.
+
+---
+
+Part 2 — Create dataset
+
 python scripts/create_dataset.py -in_dir "Data" -out_dir "Dataset"
-```
-Applies bandpass filtering, splits signals into 30-second windows with 50% overlap, labels each window, and saves to `Dataset/breathing_dataset.csv`.
 
-### Part 3 — Train model
-Open `notebooks/train_model.ipynb` in Jupyter or VS Code and run all cells.  
+Applies bandpass filtering, splits signals into 30-second windows with 50% overlap, labels each window, and saves to Dataset/breathing_dataset.csv.
+
+Dataset statistics:
+
+Total windows ≈ 8800  
+Features per window = 2040 signal values + metadata
+
+---
+
+Part 3 — Train model
+
+Open notebooks/train_model.ipynb in Jupyter or VS Code and run all cells.
+
 Trains a 1D CNN using Leave-One-Participant-Out Cross Validation across all 5 participants.
 
 ---
 
 ## Results
 
-| Metric | Score |
-|--------|-------|
-| Accuracy | 67.2% |
-| Precision | 36.0% |
-| Recall | 40.7% |
+Accuracy: 67.2%  
+Precision: 36.0%  
+Recall: 40.7%
 
-Confusion matrix saved to `Visualizations/confusion_matrix.png`.
+Confusion matrix saved to:
 
-The relatively low precision and recall is expected due to heavy class imbalance — 91% of windows are Normal, with very few Apnea examples.
+Visualizations/confusion_matrix.png
+
+The relatively low precision and recall is expected due to heavy class imbalance — around 91% of windows are Normal while Apnea and Hypopnea events are rare.
 
 ---
 
 ## Requirements
 
 Install dependencies:
-```bash
+
 pip install -r requirements.txt
-```
 
 ---
 
